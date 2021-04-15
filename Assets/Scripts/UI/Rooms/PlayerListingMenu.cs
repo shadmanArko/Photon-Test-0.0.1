@@ -22,6 +22,8 @@ namespace UI.Rooms
             base.OnEnable();
         
             GetCurrentRoomPlayers();
+            
+            SetReadyUp(false);
         }
 
         public override void OnDisable()
@@ -96,13 +98,48 @@ namespace UI.Rooms
             }
         }
 
+        public override void OnMasterClientSwitched(Player newMasterClient)
+        {
+            _roomsCanvases.CurrentRoomCanvas.LeaveRoomMenu.OnClick_LeaveRoom();
+        }
+
         public void OnClick_StartGame()
         {
             if (PhotonNetwork.IsMasterClient)
             {
+                for (int i = 0; i < _listings.Count; i++)
+                {
+                    if (_listings[i].Player != PhotonNetwork.LocalPlayer)
+                    {
+                        if (!_listings[i].Ready)
+                        {
+                            return;
+                        }
+                    }
+                }
+                
                 PhotonNetwork.CurrentRoom.IsOpen = false;
                 PhotonNetwork.CurrentRoom.IsVisible = false;
                 PhotonNetwork.LoadLevel(1);    
+            }
+        }
+
+        public void OnClick_ReadyUp()
+        {
+            if (!PhotonNetwork.IsMasterClient)
+            {
+                SetReadyUp(!_ready);
+                base.photonView.RPC("RPC_ChangeReady", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer, _ready);
+            }
+        }
+
+        [PunRPC]
+        public void RPC_ChangeReady(bool ready, Player player)
+        {
+            int index = _listings.FindIndex(x => Equals(x.Player, player));
+            if (index != -1)
+            {
+                _listings[index].Ready = ready;
             }
         }
     

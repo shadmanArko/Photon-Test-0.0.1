@@ -14,6 +14,8 @@ namespace UI.Rooms
             get;
             private set;
         }
+
+        public bool Ready = false;
         
         public void SetPlayerInfo(Player player)
         {

@@ -6,7 +6,8 @@ namespace UI.Rooms
     {
         [SerializeField] private PlayerListingMenu _playerListingMenu;
         [SerializeField] private LeaveRoomMenu _leaveRoomMenu;
-        
+        public LeaveRoomMenu LeaveRoomMenu => _leaveRoomMenu;
+
         private RoomsCanvases _roomsCanvases;
 
         public void FirstInitialize(RoomsCanvases canvases)
